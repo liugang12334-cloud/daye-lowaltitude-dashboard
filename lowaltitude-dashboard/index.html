@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大冶市低空经济综合运行服务平台 · 低空运行总态势（演示）</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <div class="bg-grid"></div>
+
+    <!-- ============ 顶部标题栏 ============ -->
+    <header class="topbar">
+      <div class="top-left">
+        <div class="link-status"><span class="dot" id="chainDot"></span>数据链路<em id="chainTxt">8/8 在线</em></div>
+        <div class="link-status"><span class="dot"></span>市级空域平台<em>已连接</em></div>
+        <div class="link-status"><span class="dot"></span>MQTT 遥测<em>1Hz</em></div>
+      </div>
+      <div class="title-wrap">
+        <h1>大冶市低空经济综合运行服务平台</h1>
+        <p>LOW-ALTITUDE OPERATION COMMAND CENTER · 低空运行总态势</p>
+      </div>
+      <div class="top-right">
+        <div class="weather">晴 24℃ · 东南风 2 级 · 能见度 12km</div>
+        <div class="clock">
+          <span class="num" id="clockTime">--:--:--</span>
+          <span id="clockDate">----年--月--日</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ 控制条 ============ -->
+    <div class="controlbar">
+      <div class="seg" id="viewTabs">
+        <button data-view="overview" class="on">总态势主屏</button>
+        <button data-view="device">设备管理屏</button>
+        <button data-view="logistics">物流运营屏</button>
+        <button data-view="safety">安全监管屏</button>
+      </div>
+      <div class="cb-mid">
+        <span class="demo-badge">DEMO · 演示数据</span>
+        <button class="chip-btn" id="btnAuto">自动轮播 关</button>
+        <button class="chip-btn" id="btnMapping">需求映射</button>
+        <button class="chip-btn" id="btnPause">暂停刷新</button>
+      </div>
+      <div class="seg scene" id="sceneTabs">
+        <button data-scene="normal" class="on">常态运行</button>
+        <button data-scene="peak">早高峰配送</button>
+        <button data-scene="medical">医疗急救</button>
+        <button data-scene="emergency">应急处置</button>
+      </div>
+    </div>
+
+    <!-- ============ KPI 指标带 ============ -->
+    <section class="kpis" id="kpis"></section>
+
+    <!-- ============ 主体三栏 ============ -->
+    <main class="main">
+      <aside class="col" id="leftCol"></aside>
+
+      <section class="center">
+        <div class="map-wrap">
+          <div id="mapChart"></div>
+
+          <div class="map-head">
+            <h2>低空运行 GIS 一张图</h2>
+            <span id="mapSub">大冶市域 · 空域网格 / 航线网络 / 实时目标</span>
+          </div>
+
+          <div class="map-toolbar">
+            <div class="tb-group" id="bookmarks">
+              <button class="tb-btn on" data-bm="all">全域总览</button>
+              <button class="tb-btn" data-bm="city">城区放大</button>
+              <button class="tb-btn" data-bm="trunk">干线航路</button>
+            </div>
+            <div class="layer-chips" id="layers">
+              <button class="layer-chip on" data-layer="airspace">空域网格</button>
+              <button class="layer-chip on" data-layer="routes">航线网络</button>
+              <button class="layer-chip on" data-layer="pads">起降场</button>
+              <button class="layer-chip on" data-layer="targets">实时目标</button>
+              <button class="layer-chip on" data-layer="events">事件告警</button>
+              <button class="layer-chip on" data-layer="towns">乡镇标注</button>
+            </div>
+          </div>
+
+          <div class="map-legend">
+            <div>
+              <span class="lg-title">空域性质</span>
+              <span class="lg-row"><i style="background:rgba(255,77,97,.75)"></i>禁飞区</span>
+              <span class="lg-row"><i style="background:rgba(255,176,32,.75)"></i>限飞区</span>
+              <span class="lg-row"><i style="background:rgba(53,224,143,.6)"></i>适飞区</span>
+            </div>
+            <div>
+              <span class="lg-title">航线分类</span>
+              <span class="lg-row"><i class="ln" style="background:#8ff0ff;box-shadow:0 0 6px #8ff0ff"></i>干线航路</span>
+              <span class="lg-row"><i class="ln" style="background:#ff6b9a"></i>医疗转运</span>
+              <span class="lg-row"><i class="ln" style="background:#2fe3ff"></i>商业配送</span>
+            </div>
+            <div>
+              <span class="lg-title">&nbsp;</span>
+              <span class="lg-row"><i class="ln" style="background:#ffb020"></i>景区接驳</span>
+              <span class="lg-row"><i class="ln" style="background:#a78bfa"></i>工业急件</span>
+              <span class="lg-row"><i class="ln" style="background:#35e08f"></i>农产品</span>
+            </div>
+          </div>
+
+          <div class="map-scene"><span class="pulse-dot"></span><span id="mapSceneTxt">演示场景：常态运行</span></div>
+
+          <div class="target-card" id="targetCard"></div>
+        </div>
+
+        <!-- ============ 语音助手（智能体，地图居中悬浮） ============ -->
+        <div class="assistant">
+          <div class="as-panel" id="asPanel">
+            <div class="as-head">
+              <span class="wave"><i></i><i></i><i></i><i></i><i></i></span>
+              小冶 · 低空运行助手
+              <span style="margin-left:auto;font-size:9.5px;color:var(--dim)">演示模式</span>
+            </div>
+            <div class="bubble user">今天飞了多少架次？比昨天多吗？</div>
+            <div class="bubble bot" id="asReply">正在调用统一指标服务取数…</div>
+            <div class="as-actions">
+              <button class="chip-btn" data-ask="sortie">今日飞了多少</button>
+              <button class="chip-btn" data-ask="fleet">机队状况</button>
+              <button class="chip-btn" data-ask="alarm">有无告警</button>
+              <button class="chip-btn" data-ask="zoom">放大城区</button>
+            </div>
+          </div>
+          <div class="as-pill" id="asPill">🎙 小冶小冶 · 试试语音问数<span class="k">DEMO</span></div>
+        </div>
+      </section>
+
+      <aside class="col" id="rightCol"></aside>
+    </main>
+
+    <!-- ============ 底部滚动区 ============ -->
+    <footer class="ticker">
+      <div class="tk-item">
+        <div class="tk-label"><span class="dot" style="background:#ff4d61;box-shadow:0 0 8px #ff4d61"></span>实时告警</div>
+        <div class="tk-track"><div class="tk-inner" id="tkAlerts"></div></div>
+      </div>
+      <div class="tk-item">
+        <div class="tk-label"><span class="dot"></span>电子运单</div>
+        <div class="tk-track"><div class="tk-inner" id="tkOrders"></div></div>
+      </div>
+      <div class="tk-item">
+        <div class="tk-label"><span class="dot" style="background:#35e08f;box-shadow:0 0 8px #35e08f"></span>平台对接</div>
+        <div class="tk-track"><div class="tk-inner" id="tkLinks"></div></div>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ============ 需求映射弹层 ============ -->
+    <div class="modal" id="mappingModal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3>需求工单 → 大屏展示模块 映射表</h3>
+          <span>来源：大冶低空平台需求功能清单 V1.0 · MVP(86项) 与 全量(215项)</span>
+          <button class="chip-btn" id="btnCloseMapping">关闭 ESC</button>
+        </div>
+        <div class="modal-body">
+          <table class="map-table" id="mappingTable"></table>
+          <p class="modal-note">
+            说明：一级指标口径统一取自「数据底座 - 统一指标服务」，大屏与智能体同源消费，不做前端二次计算；
+            刷新按三级机制执行（实时秒级 / 准实时 30s–1min / 统计 5–15min）。地图边界数据仅用于内部演示示意，
+            正式上线须接入具备审图号的合规地图服务（天地图 / 腾讯地图）。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/echarts.min.js"></script>
+<script src="assets/daye.js"></script>
+<script src="assets/data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
